@@ -3,6 +3,8 @@ package com.bignerdranch.android.photogallery;
 import android.net.Uri;
 import android.util.Log;
 
+import com.google.gson.Gson;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -64,36 +66,44 @@ public class FlickrFetchr {
                     .build().toString();
             String jsonString = getUrlString(url);
             Log.i(TAG, "Received JSON: " + jsonString);
-            JSONObject jsonBody = new JSONObject(jsonString);
-            parseItems(items, jsonBody);
+            Gson gson = new Gson();
+            Wrapper wrapper = gson.fromJson(jsonString, Wrapper.class);
+            parseItems(items, wrapper);
         } catch (IOException ioe) {
             Log.e(TAG, "Failed to fetch items", ioe);
-        } catch (JSONException je) {
-            Log.e(TAG, "Failed to parse JSON", je);
         }
 
         return items;
     }
 
-    public void parseItems(List<GalleryItem> items, JSONObject jsonBody)
-            throws IOException, JSONException {
-
-        JSONObject photosJsonObject = jsonBody.getJSONObject("photos");
-        JSONArray photoJsonArray = photosJsonObject.getJSONArray("photo");
-
-        for (int i = 0; i < photoJsonArray.length(); i++) {
-            JSONObject photoJsonObject = photoJsonArray.getJSONObject(i);
-
+    public void parseItems(List<GalleryItem> items, Wrapper wrapper) {
+        for (Wrapper.Photo photo : wrapper.photos.photo) {
             GalleryItem item = new GalleryItem();
-            item.setId(photoJsonObject.getString("id"));
-            item.setCaption(photoJsonObject.getString("title"));
+            item.setId(photo.id);
+            item.setCaption(photo.title);
 
-            if (!photoJsonObject.has("url_s")) {
+            if (photo.url_s == null) {
                 continue;
             }
 
-            item.setUrl(photoJsonObject.getString("url_s"));
+            item.setUrl(photo.url_s);
             items.add(item);
+        }
+        Log.i(TAG, "items.size(): " + items.size());
+    }
+
+    class Wrapper {
+
+        Photos photos;
+
+        class Photos {
+            Photo[] photo;
+        }
+
+        class Photo {
+            String id;
+            String title;
+            String url_s;
         }
     }
 }
