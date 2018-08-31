@@ -8,6 +8,7 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -23,6 +24,7 @@ public class PhotoGalleryFragment extends Fragment {
 
     private RecyclerView mPhotoRecyclerView;
     private List<GalleryItem> mItems = new ArrayList<>();
+    private ThumbnailDownloader<PhotoHolder> mThumbnailDownloader;
 
     public static PhotoGalleryFragment newInstance() {
         return new PhotoGalleryFragment();
@@ -34,6 +36,11 @@ public class PhotoGalleryFragment extends Fragment {
         // retain the fragment
         setRetainInstance(true);
         new FetchItemsTask().execute();
+
+        mThumbnailDownloader = new ThumbnailDownloader<>();
+        mThumbnailDownloader.start();
+        mThumbnailDownloader.getLooper();
+        Log.i(TAG, "Background thread started");
     }
 
     @Nullable
@@ -55,6 +62,13 @@ public class PhotoGalleryFragment extends Fragment {
         if (isAdded()) {
             mPhotoRecyclerView.setAdapter(new PhotoAdapter(mItems));
         }
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        mThumbnailDownloader.quit();
+        Log.i(TAG, "Background thread destroyed");
     }
 
     private class PhotoHolder extends RecyclerView.ViewHolder {
@@ -93,6 +107,7 @@ public class PhotoGalleryFragment extends Fragment {
             GalleryItem galleryItem = mGalleryItems.get(position);
             Drawable placeholder = getResources().getDrawable(R.drawable.bill_up_close);
             photoHolder.bindDrawable(placeholder);
+            mThumbnailDownloader.queueThumbnail(photoHolder, galleryItem.getUrl());
         }
 
         @Override
