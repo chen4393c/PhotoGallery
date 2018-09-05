@@ -8,5 +8,5 @@ It will fetch and display the most recent public photos uploaded to Flickr.
   <li>Solved the screen rotation issue by setting the fragment retained.</li>
   <li>Implemented downloading on an as-needed basis by creating a dedicated background thread with HandlerThread.</li>
   <li>Implemented thread communication by creating a message queue with Handler, Message and Looper.</li>
-  <li>Displayed a list of images with RecyclerView.</li>
+  <li>Displayed a list of images with RecyclerView, Picasso/Glide library.</li>
 </ul>
