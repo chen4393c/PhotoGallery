@@ -1,6 +1,5 @@
 package com.bignerdranch.android.photogallery;
 
-import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -12,8 +11,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
-
-import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -67,13 +64,6 @@ public class PhotoGalleryFragment extends Fragment {
 
             mItemImageView = (ImageView) itemView.findViewById(R.id.item_image_view);
         }
-
-        public void bindGalleryItem(GalleryItem galleryItem) {
-            Picasso.get()
-                    .load(galleryItem.getUrl())
-                    .placeholder(R.drawable.bill_up_close)
-                    .into(mItemImageView);
-        }
     }
 
     private class PhotoAdapter extends RecyclerView.Adapter<PhotoHolder> {
@@ -95,7 +85,11 @@ public class PhotoGalleryFragment extends Fragment {
         @Override
         public void onBindViewHolder(@NonNull PhotoHolder photoHolder, int position) {
             GalleryItem galleryItem = mGalleryItems.get(position);
-            photoHolder.bindGalleryItem(galleryItem);
+            GlideApp.with(getFragmentManager().findFragmentById(R.id.fragment_container))
+                    .load(galleryItem.getUrl())
+                    .placeholder(R.drawable.bill_up_close)
+                    .fitCenter()
+                    .into(photoHolder.mItemImageView);
         }
 
         @Override
