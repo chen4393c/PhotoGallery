@@ -1,6 +1,5 @@
 package com.bignerdranch.android.photogallery;
 
-import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
