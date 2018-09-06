@@ -8,6 +8,8 @@ import android.support.v4.app.Fragment;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -33,6 +35,7 @@ public class PhotoGalleryFragment extends Fragment {
         super.onCreate(savedInstanceState);
         // retain the fragment
         setRetainInstance(true);
+        setHasOptionsMenu(true);
         new FetchItemsTask().execute();
     }
 
@@ -48,6 +51,12 @@ public class PhotoGalleryFragment extends Fragment {
         setupAdapter();
 
         return v;
+    }
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        super.onCreateOptionsMenu(menu, inflater);
+        inflater.inflate(R.menu.fragment_photo_gallery, menu);
     }
 
     private void setupAdapter() {
@@ -107,7 +116,7 @@ public class PhotoGalleryFragment extends Fragment {
         @Override
         protected List<GalleryItem> doInBackground(Void... voids) {
 
-            String query = "robot";
+            String query = "dog";
 
             if (query == null) {
                 return new FlickrFetchr().fetchRecentPhotos();
