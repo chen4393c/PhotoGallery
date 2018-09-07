@@ -10,4 +10,5 @@ It will fetch and display the most recent public photos uploaded to Flickr.
   <li>Implemented thread communication by creating a message queue with Handler, Message and Looper.</li>
   <li>Displayed a list of images with RecyclerView, Picasso/Glide library.</li>
   <li>Integrated search into the app using SearchView for users searching related images.</li>
+  <li>Saved user query and implemented the query persistance between restarts of the app (even after the user turns off the device) with SharedPreferences.</li>
 </ul>
