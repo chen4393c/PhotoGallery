@@ -11,4 +11,6 @@ It will fetch and display the most recent public photos uploaded to Flickr.
   <li>Displayed a list of images with RecyclerView, Picasso/Glide library.</li>
   <li>Integrated search into the app using SearchView for users searching related images.</li>
   <li>Saved user query and implemented the query persistance between restarts of the app (even after the user turns off the device) with SharedPreferences.</li>
+  <li>Allowed users to poll for new search results in the background with AlarmManager and PendingIntent.</li>
+  <li>Displayed notifications appearing in the notifications drawer when users getting a new search result with Notification, PendingIntent and NotificationManager.</li>
 </ul>
