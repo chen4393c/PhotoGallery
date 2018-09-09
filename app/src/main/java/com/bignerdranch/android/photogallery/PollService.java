@@ -1,5 +1,6 @@
 package com.bignerdranch.android.photogallery;
 
+import android.app.Activity;
 import android.app.AlarmManager;
 import android.app.IntentService;
 import android.app.Notification;
@@ -31,6 +32,8 @@ public class PollService extends IntentService {
             "com.bignerdranch.android.photogallery.SHOW_NOTIFICATION";
     public static final String PERM_PRIVATE =
             "com.bignerdranch.android.photogallery.PRIVATE";
+    public static final String REQUEST_CODE = "REQUEST_CODE";
+    public static final String NOTIFICATION = "NOTIFICATION";
 
     public static Intent newIntent(Context context) {
         return new Intent(context, PollService.class);
@@ -111,25 +114,18 @@ public class PollService extends IntentService {
                     .setAutoCancel(true)
                     .build();
 
-            // Since android Oreo notification channel is needed.
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                NotificationChannel channel = new NotificationChannel(channelId,
-                        "Channel human readable title",
-                        NotificationManager.IMPORTANCE_DEFAULT);
-                NotificationManager notificationManager =
-                        (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-                notificationManager.createNotificationChannel(channel);
-                notificationManager.notify(0, notification);
-            } else {
-                NotificationManagerCompat notificationManagerCompat =
-                        NotificationManagerCompat.from(this);
-                notificationManagerCompat.notify(0, notification);
-            }
-
-            sendBroadcast(new Intent(ACTION_SHOW_NOTIFICATION), PERM_PRIVATE);
+            showBackgroundNotification(0, notification);
         }
         // 5. Store the first result back in SharedPreferences.
         QueryPreferences.setLastResultId(this, resultId);
+    }
+
+    private void showBackgroundNotification(int requestCode, Notification notification) {
+        Intent i = new Intent(ACTION_SHOW_NOTIFICATION);
+        i.putExtra(REQUEST_CODE, requestCode);
+        i.putExtra(NOTIFICATION, notification);
+        sendOrderedBroadcast(i, PERM_PRIVATE, null, null,
+                Activity.RESULT_OK, null, null);
     }
 
     private boolean isNetworkAvailableAndConnected() {
