@@ -29,6 +29,8 @@ public class PollService extends IntentService {
 
     public static final String ACTION_SHOW_NOTIFICATION =
             "com.bignerdranch.android.photogallery.SHOW_NOTIFICATION";
+    public static final String PERM_PRIVATE =
+            "com.bignerdranch.android.photogallery.PRIVATE";
 
     public static Intent newIntent(Context context) {
         return new Intent(context, PollService.class);
@@ -124,7 +126,7 @@ public class PollService extends IntentService {
                 notificationManagerCompat.notify(0, notification);
             }
 
-            sendBroadcast(new Intent(ACTION_SHOW_NOTIFICATION));
+            sendBroadcast(new Intent(ACTION_SHOW_NOTIFICATION), PERM_PRIVATE);
         }
         // 5. Store the first result back in SharedPreferences.
         QueryPreferences.setLastResultId(this, resultId);
