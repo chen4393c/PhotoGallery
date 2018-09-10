@@ -107,6 +107,7 @@ public class FlickrFetchr {
             }
 
             item.setUrl(photo.url_s);
+            item.setOwner(photo.owner);
             items.add(item);
         }
         Log.i(TAG, "items.size(): " + items.size());
@@ -124,6 +125,7 @@ public class FlickrFetchr {
             String id;
             String title;
             String url_s;
+            String owner;
         }
     }
 }
