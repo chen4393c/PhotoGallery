@@ -142,21 +142,31 @@ public class PhotoGalleryFragment extends VisibleFragment {
         }
     }
 
-    private class PhotoHolder extends RecyclerView.ViewHolder {
+    private class PhotoHolder extends RecyclerView.ViewHolder
+            implements View.OnClickListener {
 
         private ImageView mItemImageView;
+        private GalleryItem mGalleryItem;
 
         public PhotoHolder(View itemView) {
             super(itemView);
 
             mItemImageView = (ImageView) itemView.findViewById(R.id.item_image_view);
+            itemView.setOnClickListener(this);
         }
 
         public void bindGalleryItem(GalleryItem galleryItem) {
+            mGalleryItem = galleryItem;
             Picasso.get()
-                    .load(galleryItem.getUrl())
+                    .load(mGalleryItem.getUrl())
                     .placeholder(R.drawable.bill_up_close)
                     .into(mItemImageView);
+        }
+
+        @Override
+        public void onClick(View view) {
+            Intent i = new Intent(Intent.ACTION_VIEW, mGalleryItem.getPhotoPageUri());
+            startActivity(i);
         }
     }
 
