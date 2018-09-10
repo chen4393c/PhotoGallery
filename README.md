@@ -16,4 +16,5 @@ It will fetch and display the most recent public photos uploaded to Flickr.
   <li>Implemented notifying the user if new results are found even when the user has not opened the application with BroadcastReceiver and intent filter.</li>
   <li>Filtered foreground notifications with Fragment, BroadcastReceiver, intent filter, ordered broadcasts and priority.</li>
   <li>Limited broadcasts to your app using private permissions and protection level.</li>
+  <li>Allowed users to press a photo to see its Flickr page with WebView, WebViewClient, WebChromeClient and ProgressBar.</li>
 </ul>
