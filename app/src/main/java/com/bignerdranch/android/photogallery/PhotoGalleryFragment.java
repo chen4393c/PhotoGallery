@@ -4,9 +4,10 @@ import android.app.Activity;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
@@ -30,7 +31,9 @@ public class PhotoGalleryFragment extends VisibleFragment {
     private static final String TAG = "PhotoGalleryFragment";
 
     private RecyclerView mPhotoRecyclerView;
+    private SwipeRefreshLayout mSwipeRefreshLayout;
     private List<GalleryItem> mItems = new ArrayList<>();
+    private PhotoAdapter mAdapter;
 
     public static PhotoGalleryFragment newInstance() {
         return new PhotoGalleryFragment();
@@ -54,9 +57,58 @@ public class PhotoGalleryFragment extends VisibleFragment {
         mPhotoRecyclerView = (RecyclerView) v.findViewById(R.id.photo_recycler_view);
         mPhotoRecyclerView.setLayoutManager(new GridLayoutManager(getActivity(), 3));
 
+        mSwipeRefreshLayout = (SwipeRefreshLayout) v.findViewById(R.id.swipe_container);
+        mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                new Handler().postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        fetchPhotosAsync();
+                        mSwipeRefreshLayout.setRefreshing(false);
+                    }
+                }, 4000);
+            }
+        });
+        mSwipeRefreshLayout.setColorSchemeResources(R.color.google_blue,
+                R.color.google_green,
+                R.color.google_red,
+                R.color.google_yellow);
+        mSwipeRefreshLayout.setSize(SwipeRefreshLayout.LARGE);
+
         setupAdapter();
 
         return v;
+    }
+
+    public void fetchPhotosAsync() {
+        class RefreshItemsTask extends AsyncTask<Void, Void, List<GalleryItem>> {
+
+            private String mQuery;
+
+            public RefreshItemsTask(String query) {
+                mQuery = query;
+            }
+
+            @Override
+            protected List<GalleryItem> doInBackground(Void... voids) {
+                if (mQuery == null) {
+                    return new FlickrFetchr().fetchRecentPhotos();
+                } else {
+                    return new FlickrFetchr().searchPhotos(mQuery);
+                }
+            }
+
+            @Override
+            protected void onPostExecute(List<GalleryItem> items) {
+                mItems = items;
+                mAdapter.clear();
+                mAdapter.addAll(mItems);
+            }
+        }
+
+        String query = QueryPreferences.getStoredQuery(getActivity());
+        new RefreshItemsTask(query).execute();
     }
 
     @Override
@@ -138,7 +190,8 @@ public class PhotoGalleryFragment extends VisibleFragment {
     private void setupAdapter() {
         // check to make sure that your fragment is still attached when using a background thread
         if (isAdded()) {
-            mPhotoRecyclerView.setAdapter(new PhotoAdapter(mItems));
+            mAdapter = new PhotoAdapter(mItems);
+            mPhotoRecyclerView.setAdapter(mAdapter);
         }
     }
 
@@ -196,6 +249,16 @@ public class PhotoGalleryFragment extends VisibleFragment {
         @Override
         public int getItemCount() {
             return mGalleryItems.size();
+        }
+
+        public void clear() {
+            mGalleryItems.clear();
+            notifyDataSetChanged();
+        }
+
+        public void addAll(List<GalleryItem> items) {
+            mGalleryItems.addAll(items);
+            notifyDataSetChanged();
         }
     }
 
